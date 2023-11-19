@@ -1,0 +1,17 @@
+public class DNSServer {
+    public static void main(String[] args) throws Exception {
+        DatagramSocket s = new DatagramSocket(9876);
+        System.out.println("DNS Server running on port 9876");
+
+        while (true) {
+            byte[] b = new byte[1024];
+            DatagramPacket p = new DatagramPacket(b, b.length);
+            s.receive(p);
+
+            String d = new String(p.getData(), 0, p.getLength());
+            String r = d.equals("www.example.com") ? "192.168.1.100" : "Unknown domain";
+
+            s.send(new DatagramPacket(r.getBytes(), r.length(), p.getAddress(), p.getPort()));
+        }
+    }
+}
