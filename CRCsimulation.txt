@@ -1,0 +1,50 @@
+public class CRCSimulation {
+    private static final int POLYNOMIAL = 0x1021;
+
+    public static void main(String[] args) {
+        String message = "1101101";
+        String crcCode = generateCRC(message);
+        String transmittedMessage = message + crcCode;
+        boolean hasError = checkCRC(transmittedMessage);
+
+        System.out.println("Original Message: " + message);
+        System.out.println("Transmitted Message: " + transmittedMessage);
+        System.out.println("Received Message has Error: " + hasError);
+    }
+
+    private static String generateCRC(String message) {
+        int crc = 0;
+        int divisor = POLYNOMIAL << (message.length() - 1);
+
+        for (int i = 0; i < message.length(); i++) {
+            crc <<= 1;
+            if (message.charAt(i) == '1') {
+                crc |= 1;
+            }
+
+            if ((crc & (1 << (message.length() - 1))) != 0) {
+                crc ^= divisor;
+            }
+        }
+
+        return Integer.toBinaryString(crc);
+    }
+
+    private static boolean checkCRC(String transmittedMessage) {
+        int crc = 0;
+        int divisor = POLYNOMIAL << (transmittedMessage.length() - 1);
+
+        for (int i = 0; i < transmittedMessage.length(); i++) {
+            crc <<= 1;
+            if (transmittedMessage.charAt(i) == '1') {
+                crc |= 1;
+            }
+
+            if ((crc & (1 << (transmittedMessage.length() - 1))) != 0) {
+                crc ^= divisor;
+            }
+        }
+
+        return crc != 0;
+    }
+}
